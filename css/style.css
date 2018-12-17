@@ -1,0 +1,47 @@
+* {
+  //border: solid 1px black;
+}
+
+#container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  width: 500px;
+  height: 500px;
+  box-sizing: border-box;
+  /* Render lines between boxes*/
+  grid-gap: 20px;
+  background-color: black;
+}
+
+.square {
+  background-color: white;
+}
+
+.circle {
+  position: relative;
+  top: 20px;
+  left: 20px;
+  border: solid 15px red;
+  background-color: white;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+}
+
+/*<div class = "cross">&#10060;</div> */
+.cross {
+  content: &#10060;
+  display: inline-block;
+  position: relative;
+  top: 25px;
+  left: 25px;
+  height: 100px;
+  width: 100px;
+  border-radius: 5px;
+  text-align: center;
+  font-size: 100px;
+  line-height: 120px;
+  color: red;
+  font-family: monospace;
+}
