@@ -2,6 +2,10 @@
   //border: solid 1px black;
 }
 
+#gameBoard {
+
+}
+
 #container {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
@@ -12,6 +16,8 @@
   /* Render lines between boxes*/
   grid-gap: 20px;
   background-color: black;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .square {
@@ -44,4 +50,20 @@
   line-height: 120px;
   color: red;
   font-family: monospace;
+}
+
+#result {
+  font-size: 80px;
+  color: red;
+  text-align: center;
+}
+
+button {
+  display: block;
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  font-size: 24px;
+  margin: 30px auto;
 }

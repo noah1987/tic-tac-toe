@@ -1,18 +1,121 @@
-let clickCounter = 0;
+let gameCounter = 0;
 let contents = [];
 let gameEnd = 0;
 
 const addContent = function ($square, id) {
-  if(clickCounter % 2) {
-    $square.append('<div class=circle></div>');
+  let item;
+  if(gameCounter % 2) {
+    $('<div class=circle></div>').hide().fadeIn(300).appendTo($square);
     contents[id] = 'O';
   } else {
-    $square.append('<div class=cross> &#10060;</div>');
+    $('<div class=cross> &#10060;</div>').hide().fadeIn(300).appendTo($square);
     contents[id] = 'X';
   }
-  clickCounter++;
+  gameCounter++;
+
+  winOrNot();
 }
 
+const checkLine = function(mark, one, two, three) {
+  let result;
+  let theOther;
+  if('O' === mark) {
+    theOther = 'X';
+  }
+  else {
+    theOther = 'O';
+  }
+
+  let counterMark = 0;
+  let counterTheOther = 0;
+
+  if(contents[one] === mark) {
+    counterMark++;
+  } else if (contents[one] === theOther) {
+    counterTheOther++;
+  } else {
+    result = one;
+  }
+
+  if(contents[two] === mark) {
+    counterMark++;
+  } else if (contents[two] === theOther) {
+    counterTheOther++;
+  } else {
+    result = two;
+  }
+
+  if(contents[three] === mark) {
+    counterMark++;
+  } else if (contents[three] === theOther) {
+    counterTheOther++;
+  } else {
+    result = three;
+  }
+
+  if(counterMark === 2 && counterTheOther === 0) {
+    return result;
+  } else {
+    return undefined;
+  }
+}
+
+const findPotential = function (mark) {
+  let potential;
+
+  for(let i = 0; i < 3; i++) {
+    potential = checkLine(mark, i, i + 3, i + 6);
+    if(potential !== undefined) {
+      return potential;
+    }
+
+  }
+
+  for(let i = 0; i < 7; i += 3) {
+    potential = checkLine(mark, i, i + 1, i + 2);
+    if(potential !== undefined) {
+      return potential;
+    }
+  }
+
+  potential = checkLine(mark, 0, 4, 8);
+  if(potential !== undefined) {
+    return potential;
+  }
+
+  potential = checkLine(mark, 2, 4, 6);
+  if(potential !== undefined) {
+    return potential;
+  }
+
+  return undefined;
+}
+
+const aiPlay = function () {
+  if(gameEnd) return;
+  let potential;
+  let rand;
+  potential = findPotential('O');
+  if(undefined !== potential) {
+    setTimeout(function() {addContent($(`#${potential}`), potential)}, 300);
+    return;
+  }
+
+  potential = findPotential('X');
+  if(undefined !== potential) {
+    setTimeout(function() {addContent($(`#${potential}`), potential)}, 300);
+    return;
+  }
+
+  while (true) {
+    rand = Math.floor(Math.random() * 9);
+    if(undefined === contents[rand]) {
+      setTimeout(function () {addContent($(`#${rand}`), rand)}, 300);
+      return;
+    }
+  }
+
+}
 
 const winOrNot = function () {
   let result = undefined;
@@ -37,7 +140,13 @@ const winOrNot = function () {
   }
 
   if(result !== undefined) {
-    alert(result +" Won!");
+    $('#result').text(`${result} Win!!!`);
+    gameEnd = 1;
+    return;
+  }
+
+  if(gameCounter === 9) {
+    $('#result').text('It\'s a Draw!');
     gameEnd = 1;
   }
 }
@@ -47,14 +156,15 @@ $(document).ready(function() {
     const id = +$(this).attr('id');
     if(contents[id] === undefined && !gameEnd) {
       addContent($(this), id);
-      winOrNot();
+      aiPlay();
     }
   })
 
   $('button').on('click', function() {
-    clickCounter = 0;
+    gameCounter = 0;
     contents = [];
     $('.square').empty();
     gameEnd = 0;
+    $('#result').text('');
   })
 });
