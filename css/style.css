@@ -3,7 +3,7 @@
 }
 
 #gameBoard {
-
+  text-align: center;
 }
 
 #container {
@@ -18,16 +18,21 @@
   background-color: black;
   margin-left: auto;
   margin-right: auto;
+  //text-align:left;
 }
 
 .square {
   background-color: white;
+  display: grid;
+  /*
+  align-items: center;
+  justify-content: center;
+  */
+  place-items: center center;
 }
 
 .circle {
-  position: relative;
-  top: 20px;
-  left: 20px;
+
   border: solid 15px red;
   background-color: white;
   width: 80px;
@@ -37,11 +42,7 @@
 
 /*<div class = "cross">&#10060;</div> */
 .cross {
-  content: &#10060;
-  display: inline-block;
-  position: relative;
-  top: 25px;
-  left: 25px;
+
   height: 100px;
   width: 100px;
   border-radius: 5px;
@@ -59,11 +60,9 @@
 }
 
 button {
-  display: block;
   background-color: #4CAF50;
   color: white;
   padding: 10px 20px;
-  text-align: center;
   font-size: 24px;
-  margin: 30px auto;
+  margin: 30px;
 }

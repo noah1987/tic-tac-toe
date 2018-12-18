@@ -4,15 +4,16 @@ let gameEnd = 0;
 
 const addContent = function ($square, id) {
   let item;
+
   if(gameCounter % 2) {
-    $('<div class=circle></div>').hide().fadeIn(300).appendTo($square);
     contents[id] = 'O';
+    $('<div class=circle></div>').hide().fadeIn(200).fadeOut(200).fadeIn(500).appendTo($square);
+
   } else {
-    $('<div class=cross> &#10060;</div>').hide().fadeIn(300).appendTo($square);
     contents[id] = 'X';
+    $('<div class=cross> &#10060;</div>').hide().fadeIn(300).appendTo($square);
   }
   gameCounter++;
-
   winOrNot();
 }
 
@@ -97,20 +98,20 @@ const aiPlay = function () {
   let rand;
   potential = findPotential('O');
   if(undefined !== potential) {
-    setTimeout(function() {addContent($(`#${potential}`), potential)}, 300);
+    setTimeout(function() {addContent($(`#${potential}`), potential)}, 500);
     return;
   }
 
   potential = findPotential('X');
   if(undefined !== potential) {
-    setTimeout(function() {addContent($(`#${potential}`), potential)}, 300);
+    setTimeout(function() {addContent($(`#${potential}`), potential)}, 500);
     return;
   }
 
   while (true) {
     rand = Math.floor(Math.random() * 9);
     if(undefined === contents[rand]) {
-      setTimeout(function () {addContent($(`#${rand}`), rand)}, 300);
+      setTimeout(function () {addContent($(`#${rand}`), rand)}, 500);
       return;
     }
   }
@@ -118,30 +119,48 @@ const aiPlay = function () {
 }
 
 const winOrNot = function () {
-  let result = undefined;
+  let result = [];
   for(let i = 0; i < 3; i++) {
     if(contents[i] !== undefined && contents[i] === contents[i + 3] && contents[i] === contents[i + 6])  {
-      result = contents[i];
+      result.push(i);
+      result.push(i + 3);
+      result.push(i + 6);
     }
   }
 
   for(let i = 0; i < 7; i += 3) {
     if(contents[i] !== undefined && contents[i] === contents[i + 1] && contents[i] === contents[i + 2])  {
-      result = contents[i];
+      result.push(i);
+      result.push(i + 1);
+      result.push(i + 2);
     }
   }
 
   if(contents[0] !== undefined && contents[0] === contents[4] && contents[0] === contents[8]) {
-    result = contents[0];
+    result.push(0);
+    result.push(4);
+    result.push(8);
   }
 
   if(contents[2] !== undefined && contents[2] === contents[4] && contents[2] === contents[6]) {
-    result = contents[2];
+    result.push(2);
+    result.push(4);
+    result.push(6);
   }
 
-  if(result !== undefined) {
-    $('#result').text(`${result} Win!!!`);
+  if(result.length) {
     gameEnd = 1;
+    setTimeout(function() {
+      $(`#${result[0]} div, #${result[1]} div, #${result[2]} div`).stop(true).fadeOut(200).fadeIn(200).fadeOut(200).fadeIn(200).fadeOut(200).fadeIn(200);
+    }, 1000);
+
+    if(contents[result[0]] === 'X') {
+      $('#result').text('You Win!!!');
+    }
+    else {
+      $('#result').text('You Lose!!!');
+    }
+
     return;
   }
 
@@ -153,6 +172,9 @@ const winOrNot = function () {
 
 $(document).ready(function() {
   $('.square').on('click', function() {
+    //If the AI hasn't fished its task, don't click
+    if(gameCounter % 2) return;
+
     const id = +$(this).attr('id');
     if(contents[id] === undefined && !gameEnd) {
       addContent($(this), id);
