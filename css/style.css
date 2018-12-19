@@ -1,9 +1,16 @@
 * {
   //border: solid 1px black;
+
+}
+
+html {
+  font-size: 10px;
 }
 
 #gameBoard {
+  position: relative;
   text-align: center;
+  right:200px;
 }
 
 #container {
@@ -14,7 +21,7 @@
   height: 500px;
   box-sizing: border-box;
   /* Render lines between boxes*/
-  grid-gap: 20px;
+  grid-gap: 1.5rem;
   background-color: black;
   margin-left: auto;
   margin-right: auto;
@@ -32,23 +39,20 @@
 }
 
 .circle {
-
-  border: solid 15px red;
+  border: solid 1.5rem red;
   background-color: white;
-  width: 80px;
-  height: 80px;
+  width: 50%;
+  height: 50%;
   border-radius: 50%;
 }
 
 /*<div class = "cross">&#10060;</div> */
 .cross {
-
-  height: 100px;
-  width: 100px;
-  border-radius: 5px;
+  border-radius: 0.5rem;
+  /*margin top makes it look better*/
+  margin-top: 1.3rem;
   text-align: center;
-  font-size: 100px;
-  line-height: 120px;
+  font-size: 10rem;
   color: red;
   font-family: monospace;
 }
@@ -65,4 +69,29 @@ button {
   padding: 10px 20px;
   font-size: 24px;
   margin: 30px;
+}
+
+#container2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  width: 500px;
+  height: 500px;
+  box-sizing: border-box;
+  /* Render lines between boxes*/
+  margin-left: auto;
+  margin-right: auto;
+  //text-align:left;
+}
+
+.announcement {
+  position: absolute;
+  margin-top: 200px;
+  width: 500px;
+  z-index: 9;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: bold;
+  //color: rgba(227, 168, 105);
+  color: #4CAF50;
+  font-size: 120px;
 }

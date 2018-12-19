@@ -1,11 +1,15 @@
+/*@import url('https://fonts.googleapis.com/css?family=Orbitron');*/
+"use strict";
 let gameCounter = 0;
 let contents = [];
 let gameEnd = 0;
+let rows = 3;
+let squares = rows * rows;
 
-const addContent = function ($square, id) {
+const addContent = function($square, id) {
   let item;
 
-  if(gameCounter % 2) {
+  if (gameCounter % 2) {
     contents[id] = 'O';
     $('<div class=circle></div>').hide().fadeIn(200).fadeOut(200).fadeIn(500).appendTo($square);
 
@@ -14,23 +18,33 @@ const addContent = function ($square, id) {
     $('<div class=cross> &#10060;</div>').hide().fadeIn(300).appendTo($square);
   }
   gameCounter++;
+
   winOrNot();
 }
 
-const checkLine = function(mark, one, two, three) {
+const checkValid = function(x, y) {
+  if (x >= 0 && x < rows && y >= 0 && y < rows) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+const checkLine = function(mark, num, one, two, three) {
   let result;
   let theOther;
-  if('O' === mark) {
+
+  console.log(one + ' ' + two + ' ' + three);
+  if ('O' === mark) {
     theOther = 'X';
-  }
-  else {
+  } else {
     theOther = 'O';
   }
 
   let counterMark = 0;
   let counterTheOther = 0;
 
-  if(contents[one] === mark) {
+  if (contents[one] === mark) {
     counterMark++;
   } else if (contents[one] === theOther) {
     counterTheOther++;
@@ -38,7 +52,7 @@ const checkLine = function(mark, one, two, three) {
     result = one;
   }
 
-  if(contents[two] === mark) {
+  if (contents[two] === mark) {
     counterMark++;
   } else if (contents[two] === theOther) {
     counterTheOther++;
@@ -46,7 +60,7 @@ const checkLine = function(mark, one, two, three) {
     result = two;
   }
 
-  if(contents[three] === mark) {
+  if (contents[three] === mark) {
     counterMark++;
   } else if (contents[three] === theOther) {
     counterTheOther++;
@@ -54,129 +68,170 @@ const checkLine = function(mark, one, two, three) {
     result = three;
   }
 
-  if(counterMark === 2 && counterTheOther === 0) {
+  if (((counterMark === 1 && num === 1) || (counterMark === 2 && num === 2)) && counterTheOther === 0) {
     return result;
+  } else if ((counterMark === 3 || counterTheOther === 3) && num === 3) {
+    return [one, two, three];
   } else {
-    return undefined;
+    return false;
   }
 }
 
-const findPotential = function (mark) {
+const findPotential = function(mark, num) {
   let potential;
 
-  for(let i = 0; i < 3; i++) {
-    potential = checkLine(mark, i, i + 3, i + 6);
-    if(potential !== undefined) {
-      return potential;
+  for (let i = 0; i < rows; i++) {
+    for (let j = 0; j < rows; j++) {
+
+      /* O O O */
+      if (checkValid(i, j - 1) && checkValid(i, j + 1)) {
+        potential = checkLine(mark, num, i * rows + j - 1, i * rows + j, i * rows + j + 1);
+        if (potential !== false) {
+          return potential;
+        }
+      }
+
+      /*
+          O
+          O
+          O
+      */
+
+      if (checkValid(i - 1, j) && checkValid(i + 1, j)) {
+        potential = checkLine(mark, num, (i - 1) * rows + j, i * rows + j, (i + 1) * rows + j);
+        if (potential !== false) {
+          return potential;
+        }
+      }
+
+      /*
+          O
+        O
+      O
+      */
+
+      if (checkValid(i - 1, j + 1) && checkValid(i + 1, j - 1)) {
+        potential = checkLine(mark, num, (i - 1) * rows + j + 1, i * rows + j, (i + 1) * rows + j - 1);
+        if (potential !== false) {
+          return potential;
+        }
+      }
+
+      /*
+      O
+        O
+          O
+      */
+
+      if (checkValid(i - 1, j - 1) && checkValid(i + 1, j + 1)) {
+        potential = checkLine(mark, num, (i - 1) * rows + j - 1, i * rows + j, (i + 1) * rows + j + 1);
+        if (potential !== false) {
+          return potential;
+        }
+      }
+
     }
-
   }
-
-  for(let i = 0; i < 7; i += 3) {
-    potential = checkLine(mark, i, i + 1, i + 2);
-    if(potential !== undefined) {
-      return potential;
-    }
-  }
-
-  potential = checkLine(mark, 0, 4, 8);
-  if(potential !== undefined) {
-    return potential;
-  }
-
-  potential = checkLine(mark, 2, 4, 6);
-  if(potential !== undefined) {
-    return potential;
-  }
-
-  return undefined;
+  return false;
 }
 
-const aiPlay = function () {
-  if(gameEnd) return;
+const aiPlay = function() {
+  if (gameEnd) return;
   let potential;
   let rand;
-  potential = findPotential('O');
-  if(undefined !== potential) {
-    setTimeout(function() {addContent($(`#${potential}`), potential)}, 500);
+  potential = findPotential('O', 2);
+  if (false !== potential) {
+    setTimeout(function() {
+      addContent($(`#${potential}`), potential)
+    }, 500);
     return;
   }
 
-  potential = findPotential('X');
-  if(undefined !== potential) {
-    setTimeout(function() {addContent($(`#${potential}`), potential)}, 500);
+  potential = findPotential('X', 2);
+  if (false !== potential) {
+    setTimeout(function() {
+      addContent($(`#${potential}`), potential)
+    }, 500);
+    return;
+  }
+
+  potential = findPotential('O', 1);
+  if (false !== potential) {
+    setTimeout(function() {
+      addContent($(`#${potential}`), potential)
+    }, 500);
+    return;
+  }
+
+  potential = findPotential('X', 1);
+  if (false !== potential) {
+    setTimeout(function() {
+      addContent($(`#${potential}`), potential)
+    }, 500);
     return;
   }
 
   while (true) {
-    rand = Math.floor(Math.random() * 9);
-    if(undefined === contents[rand]) {
-      setTimeout(function () {addContent($(`#${rand}`), rand)}, 500);
+    console.log("while true");
+    rand = Math.floor(Math.random() * squares);
+    if (undefined === contents[rand]) {
+      setTimeout(function() {
+        addContent($(`#${rand}`), rand)
+      }, 500);
       return;
     }
   }
 
 }
 
-const winOrNot = function () {
-  let result = [];
-  for(let i = 0; i < 3; i++) {
-    if(contents[i] !== undefined && contents[i] === contents[i + 3] && contents[i] === contents[i + 6])  {
-      result.push(i);
-      result.push(i + 3);
-      result.push(i + 6);
-    }
-  }
-
-  for(let i = 0; i < 7; i += 3) {
-    if(contents[i] !== undefined && contents[i] === contents[i + 1] && contents[i] === contents[i + 2])  {
-      result.push(i);
-      result.push(i + 1);
-      result.push(i + 2);
-    }
-  }
-
-  if(contents[0] !== undefined && contents[0] === contents[4] && contents[0] === contents[8]) {
-    result.push(0);
-    result.push(4);
-    result.push(8);
-  }
-
-  if(contents[2] !== undefined && contents[2] === contents[4] && contents[2] === contents[6]) {
-    result.push(2);
-    result.push(4);
-    result.push(6);
-  }
-
-  if(result.length) {
+const winOrNot = function() {
+  //It doesn't matter whether it is 'O' or 'X'
+  //We need 3 same elements in a line
+  let results = findPotential('O', 3);
+  if (3 === results.length) {
     gameEnd = 1;
     setTimeout(function() {
-      $(`#${result[0]} div, #${result[1]} div, #${result[2]} div`).stop(true).fadeOut(200).fadeIn(200).fadeOut(200).fadeIn(200).fadeOut(200).fadeIn(200);
+      $(`#${results[0]} div, #${results[1]} div, #${results[2]} div`).stop(true).fadeOut(200).fadeIn(200).fadeOut(200).fadeIn(200).fadeOut(200).fadeIn(200);
     }, 1000);
 
-    if(contents[result[0]] === 'X') {
-      $('#result').text('You Win!!!');
+    if('O' === contents[results[0]]) {
+      $('<div class=announcement>You Lose!</div>').appendTo($('#container')).hide().fadeIn().fadeOut().fadeIn(1000).fadeOut(1000);
+      $('audio#lose')[0].play();
     }
     else {
-      $('#result').text('You Lose!!!');
+      $('<div class=announcement>You Win!</div>').appendTo($('#container')).hide().fadeIn().fadeOut().fadeIn(1000).fadeOut(1000);
+      $('audio#win')[0].play();
     }
 
     return;
   }
 
-  if(gameCounter === 9) {
-    $('#result').text('It\'s a Draw!');
+  if (gameCounter === squares) {
+    $('<div class=announcement>DRAW!</div>').appendTo($('#container')).hide().fadeIn().fadeOut().fadeIn(1000).fadeOut(1000);
+    $('audio#draw')[0].play();
     gameEnd = 1;
   }
 }
 
 $(document).ready(function() {
+  $('html').css('font-size', `${10 * 3 / rows}px`);
+  $('#container').css({
+    "grid-template-columns": `repeat(${rows}, 1fr)`,
+    "grid-template-rows": `repeat(${rows}, 1fr)`
+  });
+  for (let i = 0; i < squares; i++) {
+    $(`<div class=square id=${i}></div>`).appendTo($('#container'));
+  }
+
+
+
   $('.square').on('click', function() {
     //If the AI hasn't fished its task, don't click
-    if(gameCounter % 2) return;
+    if (gameCounter % 2) return;
 
     const id = +$(this).attr('id');
-    if(contents[id] === undefined && !gameEnd) {
+    if (contents[id] === undefined && !gameEnd) {
+      $('audio#add')[0].play();
       addContent($(this), id);
       aiPlay();
     }
@@ -187,6 +242,6 @@ $(document).ready(function() {
     contents = [];
     $('.square').empty();
     gameEnd = 0;
-    $('#result').text('');
+    $('.announcement').remove();
   })
 });
