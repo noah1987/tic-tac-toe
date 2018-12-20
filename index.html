@@ -34,20 +34,25 @@
     </div>
 
     <div id="side">
+
       <div id="scores">
-       &nbspYou  <span>0</span> <br> &nbsp A I <span>0</span>
+        &nbspYou <span id='humanCounter'>0</span>
+        <br> &nbsp A I <span id='aiCounter'>0</span>
+        <br>Draw <span id='drawCounter'>0</span>
       </div>
+
       <div id="xOrO">
         &nbsp X
         <label class="switch">
-  <input type="checkbox">
-  <span class="slider round"></span>
-</label>
+          <input type="checkbox" id='tgButton'>
+          <span class="slider round"></span>
+        </label>
         O
       </div>
+
       <div id="boardSize">
         Board Size
-        <select name="Size">
+        <select name="Size" id='selectSize'>
           <option value="3">3</option>
           <option value="4">4</option>
           <option value="5">5</option>
@@ -59,7 +64,7 @@
       </div>
 
       <div id="clearScore">
-          <button class="button" id="clear">Clear Score</button>
+        <button class="button" id="clear">Clear Score</button>
       </div>
 
     </div>
