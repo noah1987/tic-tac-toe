@@ -3,7 +3,7 @@
 let gameCounter = 0;
 let contents = [];
 let gameEnd = 0;
-let rows = 3;
+let rows = 6;
 let squares = rows * rows;
 
 const addContent = function($square, id) {
@@ -77,61 +77,81 @@ const checkLine = function(mark, num, one, two, three) {
   }
 }
 
+const findLines = function(mark, num, i, j) {
+  let potential;
+  /* O O O */
+  if (checkValid(i, j - 1) && checkValid(i, j + 1)) {
+    potential = checkLine(mark, num, i * rows + j - 1, i * rows + j, i * rows + j + 1);
+    if (potential !== false) {
+      return potential;
+    }
+  }
+
+  /*
+      O
+      O
+      O
+  */
+
+  if (checkValid(i - 1, j) && checkValid(i + 1, j)) {
+    potential = checkLine(mark, num, (i - 1) * rows + j, i * rows + j, (i + 1) * rows + j);
+    if (potential !== false) {
+      return potential;
+    }
+  }
+
+  /*
+      O
+    O
+  O
+  */
+
+  if (checkValid(i - 1, j + 1) && checkValid(i + 1, j - 1)) {
+    potential = checkLine(mark, num, (i - 1) * rows + j + 1, i * rows + j, (i + 1) * rows + j - 1);
+    if (potential !== false) {
+      return potential;
+    }
+  }
+
+  /*
+  O
+    O
+      O
+  */
+
+  if (checkValid(i - 1, j - 1) && checkValid(i + 1, j + 1)) {
+    potential = checkLine(mark, num, (i - 1) * rows + j - 1, i * rows + j, (i + 1) * rows + j + 1);
+    if (potential !== false) {
+      return potential;
+    }
+  }
+
+  return false;
+}
+
 const findPotential = function(mark, num) {
   let potential;
 
-  for (let i = 0; i < rows; i++) {
-    for (let j = 0; j < rows; j++) {
-
-      /* O O O */
-      if (checkValid(i, j - 1) && checkValid(i, j + 1)) {
-        potential = checkLine(mark, num, i * rows + j - 1, i * rows + j, i * rows + j + 1);
-        if (potential !== false) {
+  if (Math.random() > 0.5) {
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; j < rows; j++) {
+        potential = findLines(mark, num, i, j);
+        if (potential) {
           return potential;
         }
       }
-
-      /*
-          O
-          O
-          O
-      */
-
-      if (checkValid(i - 1, j) && checkValid(i + 1, j)) {
-        potential = checkLine(mark, num, (i - 1) * rows + j, i * rows + j, (i + 1) * rows + j);
-        if (potential !== false) {
+    }
+  } else {
+    for (let i = rows - 1; i >= 0; i--) {
+      for (let j = rows - 1; j >= 0; j--) {
+        potential = findLines(mark, num, i, j);
+        if (potential) {
           return potential;
         }
       }
-
-      /*
-          O
-        O
-      O
-      */
-
-      if (checkValid(i - 1, j + 1) && checkValid(i + 1, j - 1)) {
-        potential = checkLine(mark, num, (i - 1) * rows + j + 1, i * rows + j, (i + 1) * rows + j - 1);
-        if (potential !== false) {
-          return potential;
-        }
-      }
-
-      /*
-      O
-        O
-          O
-      */
-
-      if (checkValid(i - 1, j - 1) && checkValid(i + 1, j + 1)) {
-        potential = checkLine(mark, num, (i - 1) * rows + j - 1, i * rows + j, (i + 1) * rows + j + 1);
-        if (potential !== false) {
-          return potential;
-        }
-      }
-
     }
   }
+
   return false;
 }
 
@@ -194,11 +214,10 @@ const winOrNot = function() {
       $(`#${results[0]} div, #${results[1]} div, #${results[2]} div`).stop(true).fadeOut(200).fadeIn(200).fadeOut(200).fadeIn(200).fadeOut(200).fadeIn(200);
     }, 1000);
 
-    if('O' === contents[results[0]]) {
+    if ('O' === contents[results[0]]) {
       $('<div class=announcement>You Lose!</div>').appendTo($('#container')).hide().fadeIn().fadeOut().fadeIn(1000).fadeOut(1000);
       $('audio#lose')[0].play();
-    }
-    else {
+    } else {
       $('<div class=announcement>You Win!</div>').appendTo($('#container')).hide().fadeIn().fadeOut().fadeIn(1000).fadeOut(1000);
       $('audio#win')[0].play();
     }
@@ -237,7 +256,7 @@ $(document).ready(function() {
     }
   })
 
-  $('button').on('click', function() {
+  $('#reset').on('click', function() {
     gameCounter = 0;
     contents = [];
     $('.square').empty();

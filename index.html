@@ -12,9 +12,13 @@
 </head>
 
 <body>
-  <div id="gameBoard">
-    <div id="container">
-      <!--
+  <div id="wrapper">
+    <div id="gameBoard">
+      <div id="header">
+        Tic Tac Toe
+      </div>
+      <div id="container">
+        <!--
       <div class="square" id="0"></div>
       <div class="square" id="1"></div>
       <div class="square" id="2"></div>
@@ -25,8 +29,41 @@
       <div class="square" id="7"></div>
       <div class="square" id="8"></div>
       -->
+      </div>
+      <button class="button" id="reset">Reset</button>
     </div>
-    <button>Reset</button>
+
+    <div id="side">
+      <div id="scores">
+       &nbspYou  <span>0</span> <br> &nbsp A I <span>0</span>
+      </div>
+      <div id="xOrO">
+        &nbsp X
+        <label class="switch">
+  <input type="checkbox">
+  <span class="slider round"></span>
+</label>
+        O
+      </div>
+      <div id="boardSize">
+        Board Size
+        <select name="Size">
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+        </select>
+      </div>
+
+      <div id="clearScore">
+          <button class="button" id="clear">Clear Score</button>
+      </div>
+
+    </div>
+
   </div>
 
   <audio id="add">
