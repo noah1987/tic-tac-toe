@@ -1,63 +1,24 @@
-/*@import url('https://fonts.googleapis.com/css?family=Orbitron');*/
-"use strict";
-let gameCounter = 0;
-let contents = [];
-let gameEnd = 0;
-let rows = 3;
-let human = 'X'
-let ai = 'O';
-let humanCounter = 0;
-let aiCounter = 0;
-let drawCounter = 0;
-
-const getSquareNumber = function() {
-  return rows * rows;
-}
-
-const addContent = function($square, id) {
-  let $ai;
-  let $human;
-
-
-  if (ai === 'O') {
-    $ai = $('<div class=circle></div>');
-    $human = $('<div class=cross> &#10060;</div>');
-  } else {
-    $ai = $('<div class=cross> &#10060;</div>');
-    $human = $('<div class=circle></div>');
-  }
-
-  if (gameCounter % 2) {
-    contents[id] = ai;
-    $ai.hide().fadeIn(200).fadeOut(200).fadeIn(500).appendTo($square);
-  } else {
-    contents[id] = human;
-    $human.hide().fadeIn(300).appendTo($square);
-  }
-  gameCounter++;
-
-  winOrNot();
-}
-
-const refreshCounter = function() {
-  $('#scores #humanCounter').text(humanCounter);
-  $('#scores #aiCounter').text(aiCounter);
-  $('#scores #drawCounter').text(drawCounter);
-}
-
+/* (X, Y) are coordinates, they must be confined in the board area to be valid */
 const checkValid = function(x, y) {
-  if (x >= 0 && x < rows && y >= 0 && y < rows) {
+  if (x >= 0 && x < rowsOrColumns && y >= 0 && y < rowsOrColumns) {
     return true;
   } else {
     return false;
   }
 }
 
+/* Check evey line and return the required value\
+  mark: 'O' or 'X'
+  num: how many 'O' or 'X' in this line
+  one: the index number of the first square
+  two: the index number of the second square
+  three: the index number of the third square
+ */
 const checkLine = function(mark, num, one, two, three) {
   let result;
   let theOther;
 
-  //console.log(one + ' ' + two + ' ' + three);
+  /* there are two kinds of marks, 'X' or 'O' */
   if (ai === mark) {
     theOther = human;
   } else {
@@ -72,15 +33,8 @@ const checkLine = function(mark, num, one, two, three) {
   } else if (contents[one] === theOther) {
     counterTheOther++;
   } else {
+    /* result stores the index of the empty square */
     result = one;
-  }
-
-  if (contents[two] === mark) {
-    counterMark++;
-  } else if (contents[two] === theOther) {
-    counterTheOther++;
-  } else {
-    result = two;
   }
 
   if (contents[three] === mark) {
@@ -91,8 +45,19 @@ const checkLine = function(mark, num, one, two, three) {
     result = three;
   }
 
+  /* The prefered position to place a item is place it in the middle of the line, so check 1, 3 firstly, 2 lastly.*/
+  if (contents[two] === mark) {
+    counterMark++;
+  } else if (contents[two] === theOther) {
+    counterTheOther++;
+  } else {
+    result = two;
+  }
+
+  /* if the number of mark required to count matches the required number, then returns the index of the empty square*/
   if (((counterMark === 1 && num === 1) || (counterMark === 2 && num === 2)) && counterTheOther === 0) {
     return result;
+    /* If the number is 3, it means this game is over, then return all the indexes */
   } else if ((counterMark === 3 || counterTheOther === 3) && num === 3) {
     return [one, two, three];
   } else {
@@ -100,11 +65,12 @@ const checkLine = function(mark, num, one, two, three) {
   }
 }
 
-const findLines = function(mark, num, i, j) {
+/* The input (x, y) is the coordinates of a square, x * rowsOrColumns + y is the index of the square */
+const findLines = function(mark, num, x, y) {
   let potential;
   /* O O O */
-  if (checkValid(i, j - 1) && checkValid(i, j + 1)) {
-    potential = checkLine(mark, num, i * rows + j - 1, i * rows + j, i * rows + j + 1);
+  if (checkValid(x, y - 1) && checkValid(x, y + 1)) {
+    potential = checkLine(mark, num, x * rowsOrColumns + y - 1, x * rowsOrColumns + y, x * rowsOrColumns + y + 1);
     if (potential !== 'notFound') {
       return potential;
     }
@@ -116,8 +82,8 @@ const findLines = function(mark, num, i, j) {
       O
   */
 
-  if (checkValid(i - 1, j) && checkValid(i + 1, j)) {
-    potential = checkLine(mark, num, (i - 1) * rows + j, i * rows + j, (i + 1) * rows + j);
+  if (checkValid(x - 1, y) && checkValid(x + 1, y)) {
+    potential = checkLine(mark, num, (x - 1) * rowsOrColumns + y, x * rowsOrColumns + y, (x + 1) * rowsOrColumns + y);
     if (potential !== 'notFound') {
       return potential;
     }
@@ -129,8 +95,8 @@ const findLines = function(mark, num, i, j) {
   O
   */
 
-  if (checkValid(i - 1, j + 1) && checkValid(i + 1, j - 1)) {
-    potential = checkLine(mark, num, (i - 1) * rows + j + 1, i * rows + j, (i + 1) * rows + j - 1);
+  if (checkValid(x - 1, y + 1) && checkValid(x + 1, y - 1)) {
+    potential = checkLine(mark, num, (x - 1) * rowsOrColumns + y + 1, x * rowsOrColumns + y, (x + 1) * rowsOrColumns + y - 1);
     if (potential !== 'notFound') {
       return potential;
     }
@@ -142,8 +108,8 @@ const findLines = function(mark, num, i, j) {
       O
   */
 
-  if (checkValid(i - 1, j - 1) && checkValid(i + 1, j + 1)) {
-    potential = checkLine(mark, num, (i - 1) * rows + j - 1, i * rows + j, (i + 1) * rows + j + 1);
+  if (checkValid(x - 1, y - 1) && checkValid(x + 1, y + 1)) {
+    potential = checkLine(mark, num, (x - 1) * rowsOrColumns + y - 1, x * rowsOrColumns + y, (x + 1) * rowsOrColumns + y + 1);
     if (potential !== 'notFound') {
       return potential;
     }
@@ -152,12 +118,14 @@ const findLines = function(mark, num, i, j) {
   return 'notFound';
 }
 
+/* find a potential empty square to fill X or O */
 const findPotential = function(mark, num) {
   let potential;
 
+  /* The random makes the game more fun, don't just loop the board in one direction */
   if (Math.random() > 0.5) {
-    for (let i = 0; i < rows; i++) {
-      for (let j = 0; j < rows; j++) {
+    for (let i = 0; i < rowsOrColumns; i++) {
+      for (let j = 0; j < rowsOrColumns; j++) {
         potential = findLines(mark, num, i, j);
         if (potential !== 'notFound') {
           return potential;
@@ -165,8 +133,8 @@ const findPotential = function(mark, num) {
       }
     }
   } else {
-    for (let i = rows - 1; i >= 0; i--) {
-      for (let j = rows - 1; j >= 0; j--) {
+    for (let i = rowsOrColumns - 1; i >= 0; i--) {
+      for (let j = rowsOrColumns - 1; j >= 0; j--) {
         potential = findLines(mark, num, i, j);
         if (potential !== 'notFound') {
           return potential;
@@ -178,10 +146,13 @@ const findPotential = function(mark, num) {
   return 'notFound';
 }
 
+/* Just search for lines which has 3 adjacent elements */
 const aiPlay = function() {
   if (gameEnd) return;
   let potential;
   let rand;
+
+  /* First check if AI has a line which alreay has 2 AI's element, then AI just needs one more element to win */
   potential = findPotential(ai, 2);
   if ('notFound' !== potential) {
     setTimeout(function() {
@@ -190,6 +161,7 @@ const aiPlay = function() {
     return;
   }
 
+  /* Then check if human has a line which alreay has 2 human's element, then AI has to fill the empty square to block human from winning */
   potential = findPotential(human, 2);
   if ('notFound' !== potential) {
     setTimeout(function() {
@@ -197,7 +169,7 @@ const aiPlay = function() {
     }, 500);
     return;
   }
-
+  /* 3: Find a line which has one AI element, then put one in the line to help form a line*/
   potential = findPotential(ai, 1);
   if ('notFound' !== potential) {
     setTimeout(function() {
@@ -206,6 +178,8 @@ const aiPlay = function() {
     return;
   }
 
+
+  /* 4: Find a line which has one human element, then put one in the line to help block the line */
   potential = findPotential(human, 1);
   if ('notFound' !== potential) {
     setTimeout(function() {
@@ -224,7 +198,6 @@ const aiPlay = function() {
       return;
     }
   }
-
 }
 
 const winOrNot = function() {
@@ -236,7 +209,7 @@ const winOrNot = function() {
     setTimeout(function() {
       $(`#${results[0]} div, #${results[1]} div, #${results[2]} div`).stop(true).fadeOut(200).fadeIn(200).fadeOut(200).fadeIn(200).fadeOut(200).fadeIn(200);
     }, 1000);
-
+    /* AI wins*/
     if (ai === contents[results[0]]) {
       $('<div class=announcement>You Lose!</div>').appendTo($('#container')).hide().fadeIn().fadeOut().fadeIn(1000).fadeOut(1000);
       $('audio#lose')[0].play();
@@ -252,7 +225,8 @@ const winOrNot = function() {
     return;
   }
 
-  if (gameCounter === getSquareNumber()) {
+  /* The board is fully occupied */
+  if (stepCounter === getSquareNumber()) {
     gameEnd = 1;
     $('<div class=announcement>DRAW!</div>').appendTo($('#container')).hide().fadeIn().fadeOut().fadeIn(1000).fadeOut(1000);
     $('audio#draw')[0].play();
@@ -260,67 +234,3 @@ const winOrNot = function() {
     refreshCounter();
   }
 }
-
-const gameOver = function() {
-  gameCounter = 0;
-  contents = [];
-  $('.square').empty();
-  gameEnd = 0;
-  $('.announcement').remove();
-}
-
-const drawBoard = function() {
-  $('html').css('font-size', `${10 * 3 / rows}px`);
-  $('#container').css({
-    "grid-template-columns": `repeat(${rows}, 1fr)`,
-    "grid-template-rows": `repeat(${rows}, 1fr)`
-  });
-  for (let i = 0; i < getSquareNumber(); i++) {
-    $(`<div class=square id=${i}></div>`).appendTo($('#container'));
-  }
-
-  $('.square').on('click', function() {
-    console.log("clicked");
-    //If the AI hasn't fished its task, don't click
-    if (gameCounter % 2) return;
-
-    const id = +$(this).attr('id');
-    if (contents[id] === undefined && !gameEnd) {
-      $('audio#add')[0].play();
-      addContent($(this), id);
-      aiPlay();
-    }
-  });
-}
-
-$(document).ready(function() {
-  drawBoard();
-
-  $('button#clear').on('click', function() {
-    humanCounter = 0;
-    aiCounter = 0;
-    drawCounter = 0;
-    refreshCounter();
-  });
-
-  $('#tgButton').on('change', function() {
-    if ($(this).is(':checked')) {
-      ai = 'X';
-      human = 'O';
-    } else {
-      ai = 'O';
-      human = 'X';
-    }
-    gameOver();
-  });
-
-  $('#selectSize').on('change', function() {
-    rows = $(this).val();
-    gameOver();
-    $('#container').empty();
-    drawBoard();
-
-  });
-
-  $('#reset').on('click', gameOver);
-});
