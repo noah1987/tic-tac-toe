@@ -1,5 +1,6 @@
 # Tic Tac Toe
-## About this projecrt
+![screen shot of the game](./screenshot.png = 200x)
+## About this project
 The goal of WDI 30 Project 0 was to build a Tic Tac Toe game from scratch. I've used what I've learned about HTML, CSS, Javascript & jQuery in creating the game.
 
 ## Live Demo
