@@ -5,7 +5,7 @@
 The goal of WDI 30 Project 0 was to build a Tic Tac Toe game from scratch. I've used what I've learned about HTML, CSS, Javascript & jQuery in creating the game.
 
 ## Live Demo
-[Click Here](https://noah1987.github.io/tic-tac-toe/) to play the game.
+[Click Here](https://shouyiwang.github.io/tic-tac-toe/) to play the game.
 
 ## Highlights of the project
 #### Adaptive game board size
